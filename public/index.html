@@ -6,7 +6,7 @@
 <title>Runwal Meadows – Kanjurmarg East, Mumbai | 2, 3 & 4 BHK Starting ₹1.89 Cr*</title>
 <meta name="description" content="Runwal Meadows – Luxurious 2, 3 & 4 BHK homes with deck at Kanjurmarg East, Mumbai. Starting ₹1.89 Cr*. Part of 36-acre Runwal City Centre.">
 <link rel="canonical" href="https://www.runwalmeadows.info/" />
-<meta name="keywords" content="Runwal Meadows, Runwal Meadows Kanjurmarg, Runwal Meadows price, Runwal Meadows floor plan, Runwal Kanjurmarg East, Runwal City Centre, Heawen Property, 2 BHK flats Kanjurmarg East, 3 BHK flats Kanjurmarg East">
+<meta name="keywords" content="Runwal Meadows, Runwal Meadows Kanjurmarg, Runwal Meadows price, Runwal Meadows floor plan, Runwal Kanjurmarg East, Runwal City Centre, 2 BHK flats Kanjurmarg East, 3 BHK flats Kanjurmarg East">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -26,8 +26,8 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "RealEstateAgent",
-  "name": "Runwal Meadows - Heawen Property",
+  "@type": "ApartmentComplex",
+  "name": "Runwal Meadows",
   "image": "https://www.runwalmeadows.info/images/hero-preview.jpg",
   "url": "https://www.runwalmeadows.info/",
   "telephone": "+919821059656",
@@ -38,10 +38,8 @@
     "addressRegion": "Mumbai, Maharashtra",
     "addressCountry": "IN"
   },
-  "description": "Authorized marketing partner Heawen Property for Runwal Meadows, Kanjurmarg East. Offers premium 2, 3 & 4 BHK flats.",
+  "description": "Premium 2, 3 & 4 BHK apartments at Runwal Meadows, Kanjurmarg East, Mumbai. Starting at ₹1.89 Cr*. Part of the 36-acre Runwal City Centre.",
   "priceRange": "₹1.89 Cr - ₹4.50 Cr",
-  "areaServed": "Mumbai",
-  "knowsAbout": ["Real Estate", "Luxury Apartments", "Runwal City Centre"],
   "brand": {
     "@type": "Brand",
     "name": "Runwal"
@@ -654,11 +652,11 @@ section{padding:62px 5%;}
   <p class="footer-disc">*T&amp;C Apply. This project is financed by IndusInd Bank Ltd. The property has been mortgaged in favour of IDBI Trusteeship Services Ltd. and the buyer will be required to obtain a no-objection certificate. Plans, specifications, images and other details herein are only indicative and the developer/owner reserves the right to change any or all of these. This material does not constitute an offer and/or contract. All distances are approximate and meant for broad reference only.</p>
 
   <div class="marketed-by">
-    <strong>Marketing Policy:</strong> This property is marketed by <strong>Heawen Property</strong> · RERA Agent No. <strong>A51800003433</strong> · Authorised Channel Partner of Runwal Enterprises · This communication is for informational purposes only and does not constitute a legal offer. All transactions are subject to applicable laws and the developer's terms &amp; conditions.
+    <strong>Disclaimer:</strong> This website is for informational purposes only and does not constitute a legal offer. All images, plans, and specifications are subject to changes as per the developer's guidelines.
   </div>
 
   <div class="fb">
-    <div class="fb-copy">© 2025 Runwal Meadows · Marketed by Heawen Property (Agent RERA: A51800003433)</div>
+    <div class="fb-copy">© 2025 Runwal Meadows. All rights reserved.</div>
     <div style="font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:0.95rem;letter-spacing:2px">RUNWAL ENTERPRISES <span style="font-size:0.65rem;color:rgba(232,224,208,0.3);font-family:'Montserrat',sans-serif;letter-spacing:1px">· A Subodh Runwal Group</span></div>
   </div>
 </footer>
@@ -783,7 +781,7 @@ function submitForm(src){
   /* ── trigger brochure PDF download ── */
   if(isBrochure){setTimeout(()=>{document.getElementById('brochure-dl').click();},800);}
 
-  /* ── fire lead to heawen@runwalmeadows.info via formsubmit.co ── */
+  /* ── fire lead to backend server API ── */
   const name     = nEl.value.trim();
   const phone    = phEl.value.trim();
   const location = (src==='popup'
@@ -818,7 +816,7 @@ function submitForm(src){
 
 <!-- HIDDEN LEAD SUBMISSION FORM (works from file:// and web, no CORS) -->
 <iframe name="lead_iframe" id="lead_iframe" style="display:none" title="lead"></iframe>
-<form id="lead_form" action="https://formsubmit.co/heawen@runwalmeadows.info" method="POST" target="lead_iframe" style="display:none">
+<form id="lead_form" action="https://formsubmit.co/info@runwalmeadows.info" method="POST" target="lead_iframe" style="display:none">
   <input type="hidden" name="_subject"     id="lf_subject">
   <input type="hidden" name="Name"         id="lf_name">
   <input type="hidden" name="Phone"        id="lf_phone">
