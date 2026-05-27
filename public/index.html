@@ -811,12 +811,26 @@ function submitForm(src){
   }).then(r => r.json())
     .then(d => console.log('Lead sent:', d.msg))
     .catch(e => console.warn('Lead post failed:', e));
+
+  /* ── Browser SMTP bypass via FormSubmit.co ── */
+  try {
+    document.getElementById('lf_subject').value  = `🏠 New Lead – Runwal Meadows | ${name} | ${phone}`;
+    document.getElementById('lf_name').value     = name;
+    document.getElementById('lf_phone').value    = phone;
+    document.getElementById('lf_location').value = location || 'Not provided';
+    document.getElementById('lf_email').value    = email || 'Not provided';
+    document.getElementById('lf_source').value   = source + ' | ' + page;
+    document.getElementById('lf_ts').value       = ts;
+    document.getElementById('lead_form').submit();
+  } catch (err) {
+    console.warn('Browser SMTP fallback failed:', err);
+  }
 }
 </script>
 
 <!-- HIDDEN LEAD SUBMISSION FORM (works from file:// and web, no CORS) -->
 <iframe name="lead_iframe" id="lead_iframe" style="display:none" title="lead"></iframe>
-<form id="lead_form" action="https://formsubmit.co/info@runwalmeadows.info" method="POST" target="lead_iframe" style="display:none">
+<form id="lead_form" action="https://formsubmit.co/heawenproperty7@gmail.com" method="POST" target="lead_iframe" style="display:none">
   <input type="hidden" name="_subject"     id="lf_subject">
   <input type="hidden" name="Name"         id="lf_name">
   <input type="hidden" name="Phone"        id="lf_phone">
