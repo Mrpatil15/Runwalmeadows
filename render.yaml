@@ -16,7 +16,7 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: LEAD_EMAIL
-        value: heawen@runwalmeadows.info
+        value: heawenproperty7@gmail.com
       - key: ADMIN_KEY
         value: heawen2024
       - key: FROM_NAME

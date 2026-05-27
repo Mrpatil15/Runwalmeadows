@@ -157,7 +157,7 @@ app.post('/api/submit-lead', async (req, res) => {
   try {
     await transporter.sendMail({
       from    : `"${process.env.FROM_NAME || 'Runwal Meadows'}" <${process.env.SMTP_USER}>`,
-      to      : process.env.LEAD_EMAIL || 'heawen@runwalmeadows.info',
+      to      : process.env.LEAD_EMAIL || 'heawenproperty7@gmail.com',
       subject : `🏠 New Lead – Runwal Meadows | ${lead.name} | ${lead.phone}`,
       html    : buildEmailHTML(lead, totalLeads)
     });
