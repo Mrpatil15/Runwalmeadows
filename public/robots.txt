@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /leads
+Disallow: /api/submit-lead
+
+Sitemap: https://www.runwalmeadows.info/sitemap.xml
