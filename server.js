@@ -31,11 +31,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 if (!fs.existsSync(LEADS_FILE)) fs.writeFileSync(LEADS_FILE, '[]');
 
-function saveLead(lead) {
-  const leads = JSON.parse(fs.readFileSync(LEADS_FILE, 'utf8'));
-  leads.unshift(lead);          // newest first
-  fs.writeFileSync(LEADS_FILE, JSON.stringify(leads, null, 2));
-  return leads.length;
+// Thread-safe async queue to prevent file-write collisions
+let writeQueue = Promise.resolve();
+
+async function saveLead(lead) {
+  return new Promise((resolve, reject) => {
+    writeQueue = writeQueue.then(async () => {
+      try {
+        const content = await fs.promises.readFile(LEADS_FILE, 'utf8');
+        const leads = JSON.parse(content || '[]');
+        leads.unshift(lead); // newest first
+        await fs.promises.writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
+        resolve(leads.length);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
 }
 
 // ── Email transporter ─────────────────────────────────────────
@@ -147,7 +159,14 @@ app.post('/api/submit-lead', async (req, res) => {
   };
 
   // 1. Save to leads.json
-  const totalLeads = saveLead(lead);
+  // 1. Save to leads.json
+  let totalLeads;
+  try {
+    totalLeads = await saveLead(lead);
+  } catch (err) {
+    console.error('❌ Failed to save lead:', err.message);
+    return res.status(500).json({ ok: false, msg: 'Failed to save lead' });
+  }
   console.log(`✅ Lead #${totalLeads}: ${lead.name} | ${lead.phone} | ${lead.location}`);
 
   // 2. Send email (non-blocking — respond to client immediately)
@@ -171,24 +190,26 @@ app.post('/api/submit-lead', async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 //  GET /leads?key=ADMIN_KEY  — View all leads dashboard
 // ═══════════════════════════════════════════════════════════════
-app.get('/leads', (req, res) => {
+app.get('/leads', async (req, res) => {
   const { key } = req.query;
   if (key !== (process.env.ADMIN_KEY || 'heawen2024')) {
     return res.status(401).send('<h2>Unauthorized. Add ?key=YOUR_ADMIN_KEY to the URL</h2>');
   }
 
-  const leads = JSON.parse(fs.readFileSync(LEADS_FILE, 'utf8'));
-  const rows  = leads.map((l, i) => `
-    <tr style="background:${i%2===0?'#fff':'#fafafa'}">
-      <td style="padding:10px 14px;color:#888;font-size:12px">${leads.length - i}</td>
-      <td style="padding:10px 14px;font-weight:600">${l.name}</td>
-      <td style="padding:10px 14px"><a href="tel:${l.phone}" style="color:#c9a84c;font-weight:700">${l.phone}</a></td>
-      <td style="padding:10px 14px">${l.location}</td>
-      <td style="padding:10px 14px;font-size:12px;color:#888">${l.source}</td>
-      <td style="padding:10px 14px;font-size:12px;color:#888">${l.timestamp}</td>
-    </tr>`).join('');
+  try {
+    const content = await fs.promises.readFile(LEADS_FILE, 'utf8');
+    const leads = JSON.parse(content || '[]');
+    const rows  = leads.map((l, i) => `
+      <tr style="background:${i%2===0?'#fff':'#fafafa'}">
+        <td style="padding:10px 14px;color:#888;font-size:12px">${leads.length - i}</td>
+        <td style="padding:10px 14px;font-weight:600">${l.name}</td>
+        <td style="padding:10px 14px"><a href="tel:${l.phone}" style="color:#c9a84c;font-weight:700">${l.phone}</a></td>
+        <td style="padding:10px 14px">${l.location}</td>
+        <td style="padding:10px 14px;font-size:12px;color:#888">${l.source}</td>
+        <td style="padding:10px 14px;font-size:12px;color:#888">${l.timestamp}</td>
+      </tr>`).join('');
 
-  res.send(`<!DOCTYPE html>
+    res.send(`<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>Leads – Runwal Meadows</title>
 <style>
   body{margin:0;font-family:Arial,sans-serif;background:#f0f2f5}
@@ -210,6 +231,10 @@ app.get('/leads', (req, res) => {
     <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:40px;color:#aaa">No leads yet</td></tr>'}</tbody>
   </table>
 </div></body></html>`);
+  } catch (err) {
+    console.error('❌ Failed to read leads:', err.message);
+    res.status(500).send('<h2>Internal Server Error</h2>');
+  }
 });
 
 // ── Fallback: serve index.html for all other routes ───────────

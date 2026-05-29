@@ -1,6 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- 
+  =========================================
+  MARKETING & CONVERSION TRACKING CONFIG
+  =========================================
+  To make your website ready for Google and Meta Ads, update the IDs below.
+  When you set these IDs, the code will dynamically load the tracking scripts.
+-->
+<script>
+  // CHANGE THESE TO YOUR ACTUAL IDs (e.g., 'G-XXXXXX', '1234567890', 'GTM-XXXXXX')
+  const GA_MEASUREMENT_ID = 'G-2CT791MCPC'; // Enter Google Analytics Measurement ID
+  const META_PIXEL_ID     = ''; // Enter Meta (Facebook) Pixel ID
+  const GTM_ID            = ''; // Enter Google Tag Manager ID
+  
+  // 1. Load Google Analytics (gtag.js) dynamically
+  if (GA_MEASUREMENT_ID) {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+    
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', GA_MEASUREMENT_ID);
+    console.log('Google Analytics initialized.');
+  }
+
+  // 2. Load Meta Pixel dynamically
+  if (META_PIXEL_ID) {
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', META_PIXEL_ID);
+    fbq('track', 'PageView');
+    console.log('Meta Pixel initialized.');
+  }
+
+  // 3. Load Google Tag Manager dynamically
+  if (GTM_ID) {
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',GTM_ID);
+    console.log('Google Tag Manager initialized.');
+  }
+
+  // Helper function to track lead conversion across platforms
+  function trackLeadEvent(source) {
+    // A. GA4 conversion tracking
+    if (typeof gtag === 'function') {
+      gtag('event', 'generate_lead', {
+        'event_category': 'Engagement',
+        'event_label': source
+      });
+      console.log('GA4 Lead event tracked for source:', source);
+    }
+    
+    // B. Meta Pixel Lead tracking
+    if (typeof fbq === 'function') {
+      fbq('track', 'Lead', {
+        content_name: 'Runwal Meadows Lead',
+        content_category: source
+      });
+      console.log('Meta Pixel Lead event tracked for source:', source);
+    }
+    
+    // C. GTM DataLayer push
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        'event': 'lead_submitted',
+        'lead_source': source
+      });
+      console.log('GTM DataLayer event pushed for source:', source);
+    }
+  }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Runwal Meadows – Kanjurmarg East, Mumbai | 2, 3 & 4 BHK Starting ₹1.89 Cr*</title>
@@ -763,6 +845,11 @@ function submitForm(src){
   if(!nEl.value.trim()){nEl.style.borderColor='#e74c3c';nEl.focus();return;}
   if(!phEl.value.trim()||phEl.value.replace(/\D/g,'').length<10){phEl.style.borderColor='#e74c3c';phEl.focus();return;}
   nEl.style.borderColor='';phEl.style.borderColor='';
+
+  /* ── Trigger conversion tracking events ── */
+  if (typeof trackLeadEvent === 'function') {
+    trackLeadEvent(src);
+  }
 
   /* ── show thank-you UI immediately ── */
   const isBrochure = (src==='brochure' || src==='gallery');
