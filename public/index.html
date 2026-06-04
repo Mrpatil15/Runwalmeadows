@@ -11,21 +11,32 @@
 <script>
   // CHANGE THESE TO YOUR ACTUAL IDs (e.g., 'G-XXXXXX', '1234567890', 'GTM-XXXXXX')
   const GA_MEASUREMENT_ID = 'G-2CT791MCPC'; // Enter Google Analytics Measurement ID
+  const GOOGLE_ADS_ID     = 'AW-18185922875'; // Enter Google Ads Measurement ID
+  const GOOGLE_ADS_CONVERSION_LABEL = ''; // Enter your Google Ads Conversion Label here (e.g., 'AbCdEfGhIjKlMnOpQrS')
   const META_PIXEL_ID     = ''; // Enter Meta (Facebook) Pixel ID
   const GTM_ID            = ''; // Enter Google Tag Manager ID
   
-  // 1. Load Google Analytics (gtag.js) dynamically
-  if (GA_MEASUREMENT_ID) {
+  // Initialize dataLayer and gtag globally
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  // Load gtag.js dynamically if either GA or Google Ads is present
+  if (GA_MEASUREMENT_ID || GOOGLE_ADS_ID) {
+    const primaryId = GOOGLE_ADS_ID || GA_MEASUREMENT_ID;
     const script = document.createElement('script');
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${primaryId}`;
     document.head.appendChild(script);
     
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', GA_MEASUREMENT_ID);
-    console.log('Google Analytics initialized.');
+    if (GA_MEASUREMENT_ID) {
+      gtag('config', GA_MEASUREMENT_ID);
+      console.log('Google Analytics initialized.');
+    }
+    if (GOOGLE_ADS_ID) {
+      gtag('config', GOOGLE_ADS_ID);
+      console.log('Google Ads initialized.');
+    }
   }
 
   // 2. Load Meta Pixel dynamically
@@ -56,7 +67,7 @@
   // Helper function to track lead conversion across platforms
   function trackLeadEvent(source) {
     // A. GA4 conversion tracking
-    if (typeof gtag === 'function') {
+    if (typeof gtag === 'function' && GA_MEASUREMENT_ID) {
       gtag('event', 'generate_lead', {
         'event_category': 'Engagement',
         'event_label': source
@@ -65,7 +76,7 @@
     }
     
     // B. Meta Pixel Lead tracking
-    if (typeof fbq === 'function') {
+    if (typeof fbq === 'function' && META_PIXEL_ID) {
       fbq('track', 'Lead', {
         content_name: 'Runwal Meadows Lead',
         content_category: source
@@ -74,12 +85,20 @@
     }
     
     // C. GTM DataLayer push
-    if (window.dataLayer) {
+    if (window.dataLayer && GTM_ID) {
       window.dataLayer.push({
         'event': 'lead_submitted',
         'lead_source': source
       });
       console.log('GTM DataLayer event pushed for source:', source);
+    }
+
+    // D. Google Ads Conversion tracking
+    if (typeof gtag === 'function' && GOOGLE_ADS_ID && GOOGLE_ADS_CONVERSION_LABEL) {
+      gtag('event', 'conversion', {
+        'send_to': `${GOOGLE_ADS_ID}/${GOOGLE_ADS_CONVERSION_LABEL}`
+      });
+      console.log('Google Ads Conversion event tracked.');
     }
   }
 </script>
@@ -404,6 +423,67 @@ section{padding:62px 5%;}
 .float-group{bottom:72px;right:12px;}
 .pbd{padding:16px;}
 }
+
+/* ─── FAQ SECTION ─── */
+#faq {
+  background: var(--dark2);
+  padding: 88px 5%;
+}
+.faq-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.faq-item.active {
+  border-color: var(--gold);
+  background: rgba(201, 168, 76, 0.03);
+}
+.faq-question {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+.faq-question h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.4;
+  transition: color 0.3s;
+}
+.faq-item.active .faq-question h3 {
+  color: var(--gold);
+}
+.faq-icon {
+  font-size: 0.9rem;
+  color: var(--gold);
+  transition: transform 0.3s;
+}
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.faq-answer-inner {
+  padding: 0 24px 20px;
+  font-size: 0.86rem;
+  line-height: 1.8;
+  color: rgba(232, 224, 208, 0.7);
+}
 </style>
 </head>
 <body>
@@ -706,6 +786,88 @@ section{padding:62px 5%;}
   </div>
 </section>
 
+<!-- ═══ FAQ SECTION ═══ -->
+<section id="faq">
+  <p class="section-label">F.A.Q</p>
+  <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+  <div class="gold-line"></div>
+  <p class="section-desc">Find quick answers to common questions about Runwal Meadows, Kanjurmarg East.</p>
+  
+  <div class="faq-wrap">
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>Where is Runwal Meadows located?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Runwal Meadows is strategically located at Kanjurmarg East, Mumbai. It is situated right off the Eastern Express Highway and forms a key part of the expansive 36-acre Runwal City Centre township.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What apartment configurations are available and what is the starting price?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          The project offers premium, spacious 2, 3, and 4 BHK luxurious apartments with private decks. The pricing for these air-conditioned homes starts from ₹1.89 Cr* onwards.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>Is the project MahaRERA registered?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Yes, the project is fully registered under MahaRERA. The registration numbers are: Aster Tower (PR1181012502789), Daisy Tower (PR1181012502740), and Agent RERA (A51800003433).
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What are the primary connectivity advantages?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Runwal Meadows offers superior connectivity: just 2 minutes to the Eastern Express Highway, 5 minutes to Kanjurmarg Railway Station, 10 minutes to Powai, and close proximity to the upcoming Metro Lines 4 & 6.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What kind of amenities does the project offer?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          The project features state-of-the-art township amenities, including a swimming pool, clubhouse, fully-equipped gymnasium, sky gardens, kids' play areas, private deck spaces, and 24/7 multi-tier security.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>How can I schedule a site visit?</h3>
+        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          You can easily book a free site visit by filling out any form on this landing page, clicking the "Book Free Site Visit" button, or directly reaching out to our property consultants via the floating WhatsApp or Call buttons.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="ft">
@@ -913,6 +1075,34 @@ function submitForm(src){
     console.warn('Browser SMTP fallback failed:', err);
   }
 }
+
+// FAQ Accordion Toggle Behavior
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const answer = item.querySelector('.faq-answer');
+      const isActive = item.classList.contains('active');
+      
+      // Close all other open items
+      document.querySelectorAll('.faq-item').forEach(otherItem => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('active');
+          otherItem.querySelector('.faq-answer').style.maxHeight = null;
+        }
+      });
+      
+      // Toggle current item active state
+      if (isActive) {
+        item.classList.remove('active');
+        answer.style.maxHeight = null;
+      } else {
+        item.classList.add('active');
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
+    });
+  });
+});
 </script>
 
 <!-- HIDDEN LEAD SUBMISSION FORM (works from file:// and web, no CORS) -->
