@@ -174,16 +174,41 @@ app.post('/api/submit-lead', async (req, res) => {
 
   // Send email after responding
   try {
+    const recipientEmails = process.env.LEAD_EMAIL || 'heawenproperty7@gmail.com, heawen@runwalmeadows.info';
     await transporter.sendMail({
       from    : `"${process.env.FROM_NAME || 'Runwal Meadows'}" <${process.env.SMTP_USER}>`,
-      to      : process.env.LEAD_EMAIL || 'heawenproperty7@gmail.com',
+      to      : recipientEmails,
       subject : `🏠 New Lead – Runwal Meadows | ${lead.name} | ${lead.phone}`,
       html    : buildEmailHTML(lead, totalLeads)
     });
     console.log(`📧 Email sent for lead: ${lead.name}`);
   } catch (err) {
-    console.error('❌ Email failed:', err.message);
-    // Lead is already saved — email failure doesn't lose the lead
+    console.error('❌ SMTP Email failed, trying FormSubmit backup API:', err.message);
+    
+    // Fallback: Send email via FormSubmit.co API (requires no SMTP credentials)
+    try {
+      const recipientEmails = process.env.LEAD_EMAIL || 'heawenproperty7@gmail.com, heawen@runwalmeadows.info';
+      // If multiple recipients are configured, split and send individually or send to the primary email
+      const primaryEmail = recipientEmails.split(',')[0].trim();
+      
+      const response = await fetch(`https://formsubmit.co/ajax/${primaryEmail}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          _subject: `🏠 New Lead (Backup) – Runwal Meadows | ${lead.name} | ${lead.phone}`,
+          Name: lead.name,
+          Phone: lead.phone,
+          Location: lead.location,
+          Email: lead.email,
+          Source: lead.source,
+          Submitted_At: lead.timestamp
+        })
+      });
+      const data = await response.json();
+      console.log('📧 Backup email API response:', data);
+    } catch (fallbackErr) {
+      console.error('❌ Backup email API also failed:', fallbackErr.message);
+    }
   }
 });
 
