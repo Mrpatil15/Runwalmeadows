@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "env": {
+    "GOOGLE_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbysLrThw0SboWMV1gRDk5HsNR3Tp2iut6UyJ9yQhsxJDUPPefMP-Dqhlt7YrDsDUS49EQ/exec"
+  },
   "builds": [
     {
       "src": "api/submit-lead.js",
@@ -21,4 +24,5 @@
     }
   ]
 }
+
 
