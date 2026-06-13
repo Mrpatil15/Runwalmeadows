@@ -5,7 +5,7 @@
 
 ## Project Structure
 ```
-runwal-meadows/
+Runwalmeadows/
 ├── server.js          ← Node.js Express backend
 ├── package.json       ← Dependencies
 ├── .env               ← Your config (create from .env.example)
